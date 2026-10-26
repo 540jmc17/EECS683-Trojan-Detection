@@ -18,7 +18,7 @@ We will extract security-related features, develop a Trojan detection method, an
 | Bryant | Structural Features — Calculate fan-in, fan-out, logic depth, etc. |
 | Person 3 | Security Features & Validation — Calculate controllability, observability, rarity, and verify results |
 | Person 4 | Trojan Detection — Implement unsupervised detection and evaluate performance |
-| Person 5 | Trojan Modification & Simulation — Modify Trojan logic and test circuit behavior |
+| Janna | Trojan Modification & Simulation — Modify Trojan logic and test circuit behavior |
 
 Everyone will contribute to integration, debugging, adversarial testing, and the final report.
 
