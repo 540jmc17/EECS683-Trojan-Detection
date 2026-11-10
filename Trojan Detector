@@ -1,0 +1,59 @@
+import pandas as pd
+from sklearn.ensemble import IsolationForest
+from sklearn.impute import SimpleImputer
+from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
+
+# Load data
+data = pd.read_csv("design8_features.csv")
+
+# Load gates
+trojan_gates = set()
+
+with open("trojan_info_design8_original.txt", "r") as file:
+    reading = False
+
+    for line in file:
+        line = line.strip()
+
+        if line == "TROJAN_GATES":
+            reading = True
+        elif line == "END_TROJAN_GATES":
+            reading = False
+        elif reading and line:
+            trojan_gates.add(line)
+
+features = data.select_dtypes(include="number")
+X = SimpleImputer(strategy="median").fit_transform(features)
+
+# Detect gates, 1 = suspicious, 0 = normal
+model = IsolationForest(
+    contamination=0.10,
+    random_state=42
+)
+
+predictions = model.fit_predict(X)
+
+data["prediction"] = (predictions == -1).astype(int)
+
+# 5. Compare
+data["actual"] = data["gate_name"].isin(trojan_gates).astype(int)
+
+actual = data["actual"]
+predicted = data["prediction"]
+
+tn, fp, fn, tp = confusion_matrix(
+    actual, predicted, labels=[0, 1]
+).ravel()
+
+print("True Positives:", tp)
+print("True Negatives:", tn)
+print("False Positives:", fp)
+print("False Negatives:", fn)
+
+print("Accuracy:", accuracy_score(actual, predicted))
+print("Precision:", precision_score(actual, predicted, zero_division=0))
+print("Recall:", recall_score(actual, predicted, zero_division=0))
+
+data.to_csv("detection_results.csv", index=False)
+
+print("Done")
